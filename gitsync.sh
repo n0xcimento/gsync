@@ -9,14 +9,26 @@ commit_msg () {
     COMMIT_MSG=""
 
     # [tipo-de-alteração]nome-do-arquivo
-    COMMIT_MSG="$(git -C "$HOME/ebook" status | awk '/(deleted|modified):/{print "["substr($1, 1, 1)"]"$2" +"}' | tr '\n' ' ')"
+    test "$1" = "ebook" && COMMIT_MSG="$(git -C "$HOME/ebook" status | awk '/(deleted|modified):/{print "["substr($1, 1, 1)"]"$2" +"}' | tr '\n' ' ')"
+
+    test "$1" = "Periodo.05" && COMMIT_MSG="$(git -C "$HOME/Periodo.05" status | awk '/(deleted|modified):/{print "["substr($1, 1, 1)"]"$2" +"}' | tr '\n' ' ')"
+
     COMMIT_MSG=${COMMIT_MSG:0: -3}
     echo $COMMIT_MSG
 }
 
+
 main () {
-    commit_msg "ebook"
-    # commit_msg "Periodo.05"
+    
+    git -C "$HOME/ebook" status | grep -qE '(deleted|modified):'
+    
+    test "$?" = "0" && MSG=$(commit_msg "ebook") # caso haja alterações em ebook dir, gera msg de commit
+   
+    git -C "$HOME/Periodo.05" status | grep -qE '(deleted|modified):'
+
+    test "$?" = "0" && MSG=$(commit_msg "Periodo.05") # caso haja alterações em Periodo.05 dir, gera msg de commit
+
+    echo "$MSG"
 }
 
 main "$@"
