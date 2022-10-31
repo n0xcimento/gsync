@@ -11,20 +11,17 @@ commit_msg () {
     # mensagem que irá ser passada para o `git commmit -m`
     COMMIT_MSG=""
 
-    # [tipo-de-alteração]nome-do-arquivo
-    # test "$1" = "ebook" && COMMIT_MSG="$(git -C "$HOME/ebook" status | awk '/(deleted|modified):/{print "["substr($1, 1, 1)"]"$2}' | tr '\n' ' ')"
+    # [tipo-de-alteração]dir-raiz/nome-do-arquivo
 
-    # [tipo-de-alteração]nome-do-arquivo
-    # test "$1" = "Periodo.05" && COMMIT_MSG="$(git -C "$HOME/Periodo.05" status | awk '/(deleted|modified):/{print "["substr($1, 1, 1)"]"substr($2, 1, index($2, "/"))}' | tr '\n' ' ')"
-
-
-    COMMIT_MSG="$(git -C "$HOME/$1" status | awk '/(deleted|modified):/{
-        if ( index($2, "/") ) {
-            print "["substr($1, 1, 1)"]"substr($2, 1, index($2, "/")) 
-        } else { 
-            print "["substr($1, 1, 1)"]"$2
-        }
-    }')"
+    COMMIT_MSG="$(
+        git -C "$HOME/$1" status | awk '/(deleted|modified):/{
+            if ( index($2, "/") ) {
+                print "["substr($1, 1, 1)"]"substr($2, 1, index($2, "/")) 
+            } else { 
+                print "["substr($1, 1, 1)"]"$2
+            }
+        }'
+    )"
 
     echo $COMMIT_MSG | tr '\n' ' '
 }
@@ -39,9 +36,12 @@ push () {
         echo -n "Changes in [ $1 ], push [Y/N]: "
         read op
 
-        test "$op" = "Y" && MSG=$(commit_msg "$1")
-
-        echo "$MSG"
+        if test "$op" = "Y"; then
+            MSG="$(commit_msg $1)"
+            git -C "$HOME/$1" add .
+            git -C "$HOME/$1" commit -m "$MSG"
+            git -C "$HOME/$1" push
+        fi
     fi
 }
 
