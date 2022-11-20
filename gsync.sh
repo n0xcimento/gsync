@@ -1,10 +1,5 @@
 #!/bin/bash
 
-# Manda mudanças de diretórios padrões para o github (ebook e Periodo.05, no meu caso), bem como baixa mudanças
-# desses diretórios para o repositório local, de modo automático. O objetivo, aqui, é tentar manter os conteúdos
-# desses diretórios sempre sincronizados, para evitar conflitos em pull ou push.
-
-
 commit_msg () {
     # Gera a mensagem que irá ser mandada para o `git commit -m`. Aqui, a mensagem gerada será o [tipoDeModificação]nomeAquivo ou [tipoDeModificação]nomeDiretório
     
